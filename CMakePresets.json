@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "stm32f446ze",
+      "displayName": "NUCLEO-F446ZE (arm-none-eabi)",
+      "description": "交叉编译 preset：VS Code CMake Tools 与命令行共用同一套构建逻辑",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "toolchainFile": "${sourceDir}/cmake/arm-none-eabi.cmake"
+    }
+  ]
+}

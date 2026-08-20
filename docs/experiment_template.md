@@ -28,14 +28,14 @@ L1 寄存器 / L2 LL / L3 HAL——哪部分用哪个层次，写明原因。
 
 ## 构建与烧录
 ```bash
-cmake -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake
+cmake --preset stm32f446ze
 ninja -C build exp0XX_<topic>
 # 烧录命令（scripts/flash.sh 或 openocd）
 ```
 
 ## 仪器验证步骤
 逻辑分析仪 / 万用表怎么接、触发条件、预期波形与参数——写具体数值。
-实验后把实测波形导出到 `docs/protocols/waveforms/`。
+实测波形截图、串口日志存入本实验的 `artifacts/`（与实验待在一起）。
 
 ## 故障注入
 本实验可制造的故障（断线/短路/时钟错误/中断丢失…），

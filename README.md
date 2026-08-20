@@ -37,15 +37,18 @@
 
 ```
 embedded-lab/
-├── cmake/            # 交叉编译工具链定义
-├── docs/             # 板卡 / MCU / Cortex-M 手册与笔记、协议波形、实验模板
-├── third_party/      # 第三方代码唯一入口（STM32CubeF4，submodule）
-├── platform/         # 板级粘合层（每块板只有一份：时钟、linker、printf 重定向…）
-├── experiments/      # 实验（每个只含 main.c、配置、README、必要源文件）
-├── frameworks/       # 软件架构框架集成（protothreads … zephyr）
-├── common/           # 与硬件无关的可复用件（环形缓冲、CLI、日志…）
-├── scripts/          # 烧录、调试、仪器辅助脚本
-└── projects/         # 综合项目（区别于单点实验）
+├── CMakeLists.txt          # 构建根入口（实验在此显式登记）
+├── CMakePresets.json       # VS Code CMake Tools 与命令行共用同一套构建逻辑
+├── THIRD_PARTY_NOTICES.md  # 第三方组件许可声明
+├── cmake/                  # 交叉编译工具链定义
+├── docs/                   # 板卡 / MCU / Cortex-M 手册与笔记、协议知识、实验模板
+├── third_party/            # 第三方代码唯一入口（STM32CubeF4，submodule）
+├── platform/               # 板级粘合层（每块板只有一份：时钟、linker、printf 重定向…）
+├── experiments/            # 实验（main.c、README、artifacts/ 波形记录）
+├── frameworks/             # 软件架构框架（config/port 放各自目录）
+├── common/                 # 与硬件无关的可复用件（既不认识 MCU，也不认识 RTOS）
+├── scripts/                # 烧录、调试、仪器辅助脚本
+└── projects/               # 综合项目（区别于单点实验）
 ```
 
 核心原则：**公共 MCU 基础设施只有一份**
@@ -57,9 +60,11 @@ embedded-lab/
 工具链：arm-none-eabi-gcc（ARM GNU Toolchain 15.3）、cmake ≥ 3.20、ninja、openocd + ST-Link。
 
 ```bash
-cmake -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake
+cmake --preset stm32f446ze
 ninja -C build <experiment_target>   # 例如 exp001_gpio_output
 ```
+
+等价于 `cmake -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake`。
 
 ## 路线与状态
 

@@ -12,7 +12,20 @@
 | ChibiOS | 独立构建体系（整体替换，非库），到阶段单独评估 | ⬜ |
 | Zephyr | 独立 west + devicetree 体系，需自己 SDK，计划放仓库外独立 workspace | ⬜ |
 
+## 边界（三层各管各的）
+
+- `common/`：**既不认识 MCU，也不认识 RTOS**（fifo / crc / utils / 协议解析）
+- `platform/stm32f446ze/`：**只负责硬件平台，不知道应用用哪个 RTOS**
+- `frameworks/<fw>/`：**框架专属配置与移植都放这里**，不塞 common、不污染 platform
+
+```
+frameworks/
+└── freertos/
+    ├── config/     # FreeRTOSConfig.h
+    └── port/       # 平台移植
+```
+
 ## 原则
 
-框架实验与 `experiments/` 联动：实验代码是"应用层"，框架适配做在 platform/common，
+框架实验与 `experiments/` 联动：实验代码是"应用层"，链接 `frameworks/<fw>` 提供的库，
 避免每个实验复制一份框架。

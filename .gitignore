@@ -1,0 +1,24 @@
+# 构建产物
+build/
+build-*/
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.d
+*.out
+
+# IDE / 编辑器
+.idea/
+*.swp
+*~
+.DS_Store
+
+# 调试痕迹
+*.elf.dump
+*.gdb_history
+
+# 注：.vscode/ 不忽略——launch.json / tasks.json 调试工作流将来有意纳入仓库
+# （可复现的调试配置是本平台的一部分）

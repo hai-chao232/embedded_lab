@@ -1,0 +1,27 @@
+# ARM Cortex-M 交叉编译工具链定义
+# 用法: cmake -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake
+
+set(CMAKE_SYSTEM_NAME Generic)      # 裸机，无 OS
+set(CMAKE_SYSTEM_PROCESSOR arm)
+
+set(TOOLCHAIN_PREFIX arm-none-eabi-)
+
+# 编译/汇编共用 GCC 前端
+set(CMAKE_C_COMPILER   ${TOOLCHAIN_PREFIX}gcc)
+set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PREFIX}g++)
+set(CMAKE_ASM_COMPILER ${TOOLCHAIN_PREFIX}gcc)
+
+# 二进制工具
+set(CMAKE_OBJCOPY ${TOOLCHAIN_PREFIX}objcopy CACHE FILEPATH "objcopy")
+set(CMAKE_OBJDUMP ${TOOLCHAIN_PREFIX}objdump CACHE FILEPATH "objdump")
+set(CMAKE_SIZE    ${TOOLCHAIN_PREFIX}size    CACHE FILEPATH "size")
+set(CMAKE_GDB     ${TOOLCHAIN_PREFIX}gdb     CACHE FILEPATH "gdb")
+
+# 交叉编译时禁止运行探测程序（目标机跑不了 host 程序）
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+# 只在目标系统根目录里找库/头文件；host 工具（如 cmake 自身）不受影响
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)

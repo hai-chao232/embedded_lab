@@ -1,0 +1,158 @@
+这个仓库我不建议随便建几个文件夹。既然目标是长期维护，我们应该从第一天就设计清楚。
+
+我建议最终结构大概朝这个方向发展：
+
+embedded-lab/
+│
+├── README.md
+│
+├── LICENSE
+│
+├── .gitignore
+│
+│
+├── cmake/
+│   └── arm-none-eabi.cmake
+│
+├── docs/
+│   ├── board/
+│   │	├── NUCLEO-F446ZE/
+│   │   ├── schematic/
+│   │   ├── user_manual/
+│   │   └── notes/
+│   ├── mcu/
+│   │    └── STM32F446/
+│   │       ├── datasheet/
+│   │       ├── reference_manual/
+│   │       └── notes/
+│   ├── cortex_m/
+│   │   └── Cortex-M4/
+│   │       ├── generic_user_guide/
+│   │       ├── programming_manual/
+│   │       └── notes/
+│   └── protocols/
+│	    ├── i2c/
+│	    ├── spi/
+│	    └── waveforms/
+│
+├── third_party/
+│   └── STM32CubeF4/
+│
+├── platform/
+│   └── stm32f446ze/
+│
+├── experiments/
+│   │
+│   ├── 001_gpio_output/
+│   ├── 002_gpio_input/
+│   ├── 003_exti/
+│   ├── 004_nvic/
+│   ├── 005_timer/
+│   └── ...
+│
+├── frameworks/
+│   ├── protothreads/
+│   ├── eventos_nano/
+│   ├── qpnano/
+│   ├── freertos/
+│   ├── chibios/
+│   └── zephyr/
+│
+├── common/
+│
+├── scripts/
+│
+└── projects/
+
+其中 ST 官方的 STM32CubeF4 很适合作为我们 MCU 官方基础资料/代码来源，而不是从网上七拼八凑 startup、CMSIS 和头文件。
+
+但有一个设计原则我要提前定下来
+
+这个仓库不是：
+
+001/
+复制一份 HAL
+
+
+002/
+再复制一份 HAL
+
+
+003/
+再复制一份 HAL
+
+最后几十个实验，每个里面都有一坨：
+
+Drivers/
+CMSIS/
+HAL/
+startup/
+
+那样半年以后仓库会非常难维护。
+
+我们应该做：
+
+              STM32CubeF4
+                   │
+             platform/common
+                   │
+      ┌────────────┼────────────┐
+      │            │            │
+ Experiment001 Experiment002 Experiment003
+
+公共的 MCU 基础设施只有一份。
+
+每个 Experiment 只保留真正属于这个实验的：
+
+main.c
+实验配置
+README
+必要的源文件
+
+这样才能成为长期实验平台。
+
+我们还要故意分三个开发层次
+
+这一点对你特别重要。
+
+以后实验不能永远只用 HAL。
+
+我们会依次出现：
+
+Level 1
+寄存器 / CMSIS
+      │
+      │ 理解硬件
+      ▼
+Level 2
+STM32 LL
+      │
+      │ 理解厂商驱动抽象
+      ▼
+Level 3
+HAL
+      │
+      │ 快速工程开发
+      ▼
+RTOS / Framework
+
+例如 GPIO：
+
+第一次可能直接：
+
+GPIOx->MODER
+GPIOx->ODR
+
+理解寄存器。
+
+然后看 LL：
+
+LL_GPIO_SetOutputPin(...)
+
+然后再理解：
+
+HAL_GPIO_WritePin(...)
+
+这样以后看到 HAL，你知道它下面到底在干什么。
+
+STM32CubeF4 同时提供 HAL 和 Low-Layer API，正好适合我们采用这种方式。

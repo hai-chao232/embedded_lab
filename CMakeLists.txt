@@ -12,7 +12,7 @@ add_subdirectory(platform)
 
 # 实验登记：显式列表，不用 glob；新增实验在这里加一行
 set(EXPERIMENTS
-  # 001_gpio_output
+  001_gpio_output
   # 002_gpio_input
 )
 

@@ -23,4 +23,4 @@ git -C third_party/STM32CubeF4 checkout v1.28.3   # 锁定 release tag
 ## 状态
 
 - [x] 接入 STM32CubeF4 submodule，锁定 release tag **v1.28.3**（2026-08）
-- [ ] 平台实际使用的组件许可在根目录 `THIRD_PARTY_NOTICES.md` 逐一核对补录
+- [x] 平台实际使用的组件许可在根目录 `THIRD_PARTY_NOTICES.md` 逐一核对补录

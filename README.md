@@ -60,6 +60,9 @@ embedded-lab/
 工具链：arm-none-eabi-gcc（ARM GNU Toolchain 15.3）、cmake ≥ 3.20、ninja、openocd + ST-Link。
 
 ```bash
+# 首次克隆后初始化 submodule（CubeF4 含嵌套 submodule，必须 --recursive）
+git submodule update --init --recursive
+
 cmake --preset stm32f446ze
 ninja -C build <experiment_target>   # 例如 exp001_gpio_output
 ```
@@ -71,4 +74,4 @@ ninja -C build <experiment_target>   # 例如 exp001_gpio_output
 - 学习路线与实验清单：`ROADMAP.md`
 - 每个实验的 README 模板：`docs/experiment_template.md`
 - 立项背景文档：`docs/planning/`
-- 当前状态：仓库骨架已建；STM32CubeF4 submodule 待接入（见 `third_party/README.md`）
+- 当前状态：STM32CubeF4 v1.28.3 已接入；platform/stm32f446ze 基础落地（startup / linker / 编译选项）；实验 001 骨架就绪（寄存器点灯待实现）

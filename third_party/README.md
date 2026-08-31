@@ -2,13 +2,14 @@
 
 第三方代码的唯一入口。不放网上散装的 startup / CMSIS / 头文件。
 
-## STM32CubeF4（计划）
+## STM32CubeF4（已接入，锁定 v1.28.3）
 
 以 git submodule 引入 ST 官方仓库——HAL、LL、CMSIS、startup、FreeRTOS 全部来自这一个来源：
 
 ```bash
 git submodule add https://github.com/STMicroelectronics/STM32CubeF4.git third_party/STM32CubeF4
 git submodule update --init --recursive third_party/STM32CubeF4
+git -C third_party/STM32CubeF4 checkout v1.28.3   # 锁定 release tag
 ```
 
 - **STM32CubeF4 官方仓库本身由多个嵌套 submodule 组成**，初始化必须 `--recursive`，
@@ -21,4 +22,5 @@ git submodule update --init --recursive third_party/STM32CubeF4
 
 ## 状态
 
-- [ ] 接入 STM32CubeF4 submodule（选定并锁定 release tag，验证 HAL/LL/CMSIS 完整）
+- [x] 接入 STM32CubeF4 submodule，锁定 release tag **v1.28.3**（2026-08）
+- [ ] 平台实际使用的组件许可在根目录 `THIRD_PARTY_NOTICES.md` 逐一核对补录

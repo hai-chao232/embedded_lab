@@ -7,6 +7,6 @@
 
 | 组件 | 来源 | 许可 | 备注 |
 |------|------|------|------|
-| STM32CubeF4（计划接入） | STMicroelectronics | 见其仓库 LICENSE；HAL/CMSIS 等为 BSD-3-Clause，部分 middleware 组件各有独立许可 | 接入时逐一核对组件级许可并补录本表 |
+| STM32CubeF4 v1.28.3（submodule） | STMicroelectronics | 见其仓库 LICENSE；HAL/CMSIS 等为 BSD-3-Clause，部分 middleware 组件各有独立许可 | 当前平台仅用 CMSIS/startup/system；实际引用组件随平台落地逐一核对补录 |
 
 **规则**：接入任何新第三方组件时，必须在本表登记许可信息。

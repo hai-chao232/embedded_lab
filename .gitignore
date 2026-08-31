@@ -20,9 +20,17 @@ build-*/
 *.elf.dump
 *.gdb_history
 
-# 实验产物（波形截图/串口日志）不入库，仅保留目录占位
-experiments/*/artifacts/*
-!experiments/*/artifacts/.gitkeep
+# 实验依据归档策略
+#
+# artifacts/ 中的“精选证据”应进入 Git，例如：
+#   - 波形/寄存器截图
+#   - 少量关键 CSV / TXT
+#   - 串口日志
+#   - 结论性记录
+#
+# 大体积原始采样、仪器工程文件统一放入 artifacts/raw/，
+# raw/ 不进入 Git；需要长期保存时使用本地归档或其他大文件存储。
+experiments/*/artifacts/raw/
 
 # 注：.vscode/ 不忽略——launch.json / tasks.json 调试工作流将来有意纳入仓库
 # （可复现的调试配置是本平台的一部分）

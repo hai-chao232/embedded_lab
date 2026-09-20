@@ -1,5 +1,7 @@
 # docs/cortex_m/ Cortex-M 内核资料
 
+> 上级：[docs/](../README.md)
+
 ```
 Cortex-M4/
 ├── generic_user_guide/   # 通用用户指南（内核）

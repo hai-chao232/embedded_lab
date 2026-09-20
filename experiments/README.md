@@ -1,5 +1,7 @@
 # experiments/ 实验目录
 
+> 上级：[根 README](../README.md)
+
 ## 结构
 
 每个实验一个目录，命名 `0XX_<topic>`（编号与清单见根目录 `ROADMAP.md`）。
@@ -18,7 +20,8 @@ STM32CubeF4 ──▶ platform/common ──▶ Experiment001 / 002 / 003 …
 ├── main.c
 └── artifacts/       # 本实验的波形截图、串口日志——与实验待在一起
     ├── normal_400khz.png
-    └── serial.log
+    ├── serial.log
+    └── raw/         # 大体积原始采样 / 仪器工程，.gitignore 忽略不入库
 ```
 
 一个实验的"代码 + 接线 + 波形 + 故障 + 结论"永远待在一起；

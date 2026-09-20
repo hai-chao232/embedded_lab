@@ -10,9 +10,13 @@
 
 ## 能力阶梯
 
-我知道它为什么存在 → 我知道底层怎么工作 → 我能自己配置和驱动
-→ 我能用仪器验证它 → 我能制造故障并定位 → 我能把它放进不同的软件架构
-→ 我知道什么时候应该用它
+1. 我知道它为什么存在
+2. 我知道底层怎么工作
+3. 我能自己配置和驱动
+4. 我能用仪器验证它
+5. 我能制造故障并定位
+6. 我能把它放进不同的软件架构
+7. 我知道什么时候应该用它
 
 ## 实验四原则
 
@@ -55,6 +59,9 @@ embedded-lab/
 （STM32CubeF4 → platform/common → experiments），
 每个实验只保留真正属于自己的文件，杜绝几十个实验各复制一坨 HAL。
 
+每个目录都有自己的 README.md 进一步说明；推荐阅读顺序：
+根 README → `ROADMAP.md` → 你当前关心的目录。
+
 ## 快速开始
 
 工具链：arm-none-eabi-gcc（ARM GNU Toolchain 15.3）、cmake ≥ 3.20、ninja、openocd + ST-Link。
@@ -69,9 +76,10 @@ ninja -C build <experiment_target>   # 例如 exp001_gpio_output
 
 等价于 `cmake -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake`。
 
-## 路线与状态
+构建产物在 `build/` 目录；烧录方法见各实验 README 的"构建与烧录"节。
 
-- 学习路线与实验清单：`ROADMAP.md`
+## 路线
+
+- 学习路线与实验清单（进度唯一权威）：`ROADMAP.md`
 - 每个实验的 README 模板：`docs/experiment_template.md`
 - 立项背景文档：`docs/planning/`
-- 当前状态：STM32CubeF4 v1.28.3 已接入；platform/stm32f446ze 基础落地（startup / linker / 编译选项）；实验 001 骨架就绪（寄存器点灯待实现）

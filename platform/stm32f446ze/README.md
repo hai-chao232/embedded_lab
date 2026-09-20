@@ -1,7 +1,9 @@
 # platform/stm32f446ze/ 板级粘合层
 
+> 上级：[platform/](../README.md)
+
 **每块板只有一份**，所有实验共享。定位：vendor 代码（third_party）与实验之间的粘合。
-**只负责硬件平台，不知道应用用哪个 RTOS**（RTOS 专属移植放 `frameworks/<fw>/port/`）。
+（平台层的三层边界见上级 [platform/README.md](../README.md)，此处不重复。）
 
 ## 规划内容
 
@@ -17,7 +19,7 @@
 
 > 时钟来源从第一天记正确：以后研究 RCC 时会碰到 **HSE crystal 与 HSE bypass 的区别**。
 
-## 状态（2026-08）
+## 状态（2026-08-31）
 
 - ✅ 基础已落地：CubeF4 include 路径、`STM32F446xx` / `HSE_VALUE=8M` 宏、startup、linker script、Cortex-M4F 编译链接选项（nano.specs、gc-sections）
 - ⬜ clock：HSE bypass → 180 MHz 待做（001 先用默认 HSI 跑通）

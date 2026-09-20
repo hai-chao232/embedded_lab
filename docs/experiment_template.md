@@ -1,6 +1,7 @@
 # 实验 README 模板
 
 > 新建实验时：把本文件复制为 `experiments/0XX_topic/README.md` 并填写。
+> README 的 H1 标题下加一行上级导航：`> 上级：[experiments/](../README.md)`。
 > 编号与 Level 约定见根目录 `ROADMAP.md`。
 > “仪器验证步骤”和“故障注入”是必填项——四原则（可观察、可测量、可故障注入、可复现）落地的载体。
 > 引脚、板载外设名称和连接关系必须以当前目标板的官方 User Manual / 原理图为准，不从其他型号开发板直接照搬。

@@ -1,5 +1,7 @@
 # 实验 001：gpio_output 点灯
 
+> 上级：[experiments/](../README.md)
+
 ## 目的
 
 建立"寄存器控制 GPIO"的第一层认知：**RCC 门控时钟 → 模式配置 → 输出电平**。

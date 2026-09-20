@@ -1,5 +1,7 @@
 # docs/mcu/ MCU 资料
 
+> 上级：[docs/](../README.md)
+
 ```
 STM32F446/
 ├── datasheet/           # 数据手册（电气参数、引脚复用）

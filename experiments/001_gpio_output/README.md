@@ -26,7 +26,9 @@ PB0 物理电平
 - Memory-Mapped I/O、基地址、寄存器 offset、`volatile` 和 Read-Modify-Write 的关系；
 - C 源码如何编译成 Cortex-M4 的 `LDR / STR / BIC / ORR`；
 - ELF 如何经 OpenOCD、ST-LINK、SWD 写入 MCU Flash；
+- GDB 如何经 OpenOCD / ST-LINK / SWD 在真机上断点、单步并观察 MMIO 变化；
 - 程序运行后关键寄存器的真实值是否与源码意图一致。
+- 如何通过可控故障注入改变 `GPIOB_ODR`，观察 LD1 响应并恢复正确状态。
 
 对应能力阶梯：**我知道底层怎么工作 → 我能自己配置和驱动**。
 
@@ -251,6 +253,15 @@ OpenOCD 能成功 `reset halt`，说明主机 → USB → ST-LINK → SWD → Co
 
 复位后板载绿色 **LD1 成功保持点亮**。
 
+最终自动烧录入口也完成实机验证：
+
+```bash
+cmake --preset stm32f446ze
+ninja -C build flash_exp001_gpio_output
+```
+
+`flash_exp001_gpio_output` 成功走通平台 OpenOCD 配置、通用 `flash.sh`、Programming、Verify、Reset，最终 LD1 正常点亮。
+
 ### 6. 关键寄存器读回
 
 程序运行后 halt，通过 OpenOCD 32-bit memory read 得到：
@@ -278,7 +289,22 @@ OpenOCD 能成功 `reset halt`，说明主机 → USB → ST-LINK → SWD → Co
 
 `MODER = 0x281`、`OSPEEDR = 0xC0`、`PUPDR = 0x100` 而不是简单的 `1/0/0`，反而证明了代码只修改 PB0 field，没有粗暴覆盖 GPIOB 其他 pin 的既有配置。
 
-## 仪器验证步骤
+### 7. GDB / SWD 运行时调试
+
+本次直接使用 `arm-none-eabi-gdb` 连接 OpenOCD 的 GDB server（`localhost:3333`），没有依赖 VS Code 图形界面。Cortex-Debug 后续只是把同一条 GDB → OpenOCD → ST-LINK → SWD 链路自动化，不作为 001 额外重复验收项。
+
+已实机完成：
+
+- `break main` 成功使用 Cortex-M4 hardware breakpoint；
+- `continue`、`stepi`、CPU register 查看和 MMIO memory read 均正常；
+- RCC 时钟使能前 `RCC_AHB1ENR = 0x00000000`；执行 `ORR #2` 后仅 CPU `r3 = 0x2`，外设寄存器仍为 `0`；执行随后的 `STR` 后 `RCC_AHB1ENR = 0x00000002`；
+- `GPIOB_MODER` 初值 `0x00000280`，执行 PB0 mode 的 `ORR #1` 后 CPU 中先得到 `0x281`，直到 `STR` 后外设寄存器才变为 `0x00000281`；
+- 在本次最终 ELF 中，ODR 写入前断在 `0x080002A6`：执行 `ORR #1` 后 `r3 = 1`、`GPIOB_ODR` 仍为 `0`；再执行 `STR` 后 `GPIOB_ODR = 1`，同时观察到 LD1 由灭变亮；
+- `main()` 最终进入自身 branch 的无限循环，验证初始化代码已经完整执行。
+
+这组结果把“CPU register 中算出新值”和“通过 `STR` 真正写入 Memory-Mapped 外设寄存器”明确区分开。
+
+## 实机与可选仪器验证
 
 ### 本次封口已经完成
 
@@ -296,7 +322,29 @@ OpenOCD 能成功 `reset halt`，说明主机 → USB → ST-LINK → SWD → Co
 
 ## 故障注入
 
-本节保留为可复现的练习方案；未执行的项目不标成“实测完成”。
+### 已执行：直接改写 GPIOB_ODR
+
+程序停在 `while (1)` 后，通过 GDB 直接改写正在工作的 MMIO 寄存器：
+
+```gdb
+x/wx 0x40020414
+set {unsigned int}0x40020414 = 0x00000000
+x/wx 0x40020414
+set {unsigned int}0x40020414 = 0x00000001
+x/wx 0x40020414
+```
+
+实测结果：
+
+```text
+GPIOB_ODR = 0x1  → LD1 亮
+GPIOB_ODR = 0x0  → LD1 灭
+GPIOB_ODR = 0x1  → LD1 重新亮
+```
+
+过程中没有重新编译、重新烧录或重新执行 `main()`；变化来自 GDB → OpenOCD → ST-LINK → SWD 对运行中硬件寄存器的直接改写。这构成 001 的最小“制造故障 → 观察 → 恢复”闭环。
+
+### 其余可复现练习（本次未执行，不标成实测）
 
 1. **不开 RCC 时钟**
    - 制造：注释 `GPIOBEN` 使能。
@@ -394,7 +442,10 @@ main()
 - [x] Flash program + verify + reset 成功。
 - [x] LD1 实机点亮。
 - [x] 关键寄存器实机读回与预期完全一致。
-- [x] OpenOCD 烧录流程已从手工长命令沉淀为平台配置 + 通用脚本 + `flash_<target>`。
+- [x] GDB 通过 OpenOCD 完成 hardware breakpoint、`continue`、`stepi`、CPU register / MMIO 观察。
+- [x] 逐指令确认 `ORR` 只改变 CPU 中间值，最终 `STR` 才真正改变 RCC / GPIO 外设寄存器；ODR 写入后 LD1 同步点亮。
+- [x] 已执行最小故障注入：GDB 直接改写 `GPIOB_ODR`，LD1 实测 `亮 → 灭 → 亮` 并恢复。
+- [x] OpenOCD 烧录流程已从手工长命令沉淀为平台配置 + 通用脚本 + `flash_<target>`，最终自动入口已在真机验证。
 - [x] 明确记录本次没有做的万用表/LA 扩展测量，不伪造证据。
 
 至此实验 001 正式作为后续 GPIO input、EXTI、Timer 等实验的 **L1 GPIO 输出基线**。

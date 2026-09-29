@@ -24,7 +24,6 @@
 
 "程序跑通"只是及格线。重点是：为什么成功？逻辑分析仪看到什么？
 寄存器是什么状态？中断什么时候发生？异常时怎么应对？
-
 ## 开发层次纪律
 
 | Level | 手段 | 目的 |
@@ -36,9 +35,7 @@
 
 同一外设从寄存器到 HAL 逐层递进，这样以后看到 HAL，你知道它下面在干什么。
 例外：USB 直接从框架级开始（TinyUSB / ST USB Device），不手搓 Chapter 9。
-
 ## 目录结构
-
 ```
 embedded-lab/
 ├── CMakeLists.txt          # 构建根入口（实验在此显式登记）
@@ -54,14 +51,12 @@ embedded-lab/
 ├── scripts/                # 烧录、调试、仪器辅助脚本
 └── projects/               # 综合项目（区别于单点实验）
 ```
-
 核心原则：**公共 MCU 基础设施只有一份**
 （STM32CubeF4 → platform/common → experiments），
 每个实验只保留真正属于自己的文件，杜绝几十个实验各复制一坨 HAL。
 
 每个目录都有自己的 README.md 进一步说明；推荐阅读顺序：
 根 README → `ROADMAP.md` → 你当前关心的目录。
-
 ## 快速开始
 
 工具链：arm-none-eabi-gcc（ARM GNU Toolchain 15.3）、cmake ≥ 3.20、ninja、openocd + ST-Link。
@@ -70,14 +65,20 @@ embedded-lab/
 # 首次克隆后初始化 submodule（CubeF4 含嵌套 submodule，必须 --recursive）
 git submodule update --init --recursive
 
+# 首次配置 / CMake 发生结构变化后重新配置
 cmake --preset stm32f446ze
+
+# 只构建某个实验
 ninja -C build <experiment_target>   # 例如 exp001_gpio_output
+
+# 构建（如有必要）+ OpenOCD 烧录 + verify + reset
+ninja -C build flash_<experiment_target>   # 例如 flash_exp001_gpio_output
 ```
 
-等价于 `cmake -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake`。
+等价配置入口为 `cmake -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake`。
 
-构建产物在 `build/` 目录；烧录方法见各实验 README 的"构建与烧录"节。
-
+烧录链路统一为：`ELF → scripts/flash.sh → OpenOCD → ST-LINK → SWD → STM32`；
+板级 OpenOCD 配置归 `platform/<board>/` 管理，实验 README 记录本实验 target 和验证结果。
 ## 路线
 
 - 学习路线与实验清单（进度唯一权威）：`ROADMAP.md`

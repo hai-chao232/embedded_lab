@@ -1,26 +1,23 @@
 # platform/stm32f446ze：NUCLEO-F446ZE 板级粘合
-
 # ---------------------------------------------------------------------------
 # Library
 # 语法：add_Library(<name> [STATIC|SHARED|MODULE|INTERFACE])
 # 创建一个叫 platform_stm32f446ze 的库，类型是 INTERFACE：
-#                                          1.不会编译生成.a或.so文件。 
-#                                          2.只是一个属性合集，包含include路径、宏定义、编译选项等。 
+#                                          1.不会编译生成.a或.so文件。
+#                                          2.只是一个属性合集，包含include路径、宏定义、编译选项等。
 #                                          3.任何依赖它的target都会继承这些属性
 #
 # 语法：set(<variable> <value> ...)
 # 用来定义变量，后面可以通过 ${<variable>} 引用该变量
 # ---------------------------------------------------------------------------
 add_library(platform_stm32f446ze INTERFACE)
- 
+
 set(STM32CUBE_F4_DIR
     ${PROJECT_SOURCE_DIR}/third_party/STM32CubeF4
 )
-
 set(STM32F4_CMSIS_DEVICE_DIR
     ${STM32CUBE_F4_DIR}/Drivers/CMSIS/Device/ST/STM32F4xx
 )
-
 # ---------------------------------------------------------------------------
 # CMSIS / device headers
 # 语法：target_include_directories(<target> [INTERFACE|PUBLIC|PRIVATE] <dirs> ...)
@@ -36,7 +33,6 @@ target_include_directories(
     ${STM32CUBE_F4_DIR}/Drivers/CMSIS/Include
     ${STM32F4_CMSIS_DEVICE_DIR}/Include
 )
-
 # ---------------------------------------------------------------------------
 # MCU selection / board clock facts
 # 语法：target_compile_definitions(<target> [INTERFACE|PUBLIC|PRIVATE] <definitions> ...)
@@ -50,7 +46,6 @@ target_compile_definitions(
     STM32F446xx
     HSE_VALUE=8000000U
 )
-
 # ---------------------------------------------------------------------------
 # Startup / CMSIS system source
 # 语法：target_sources(<target> [INTERFACE|PUBLIC|PRIVATE] <sources> ...)
@@ -64,12 +59,11 @@ target_sources(
     ${STM32F4_CMSIS_DEVICE_DIR}/Source/Templates/system_stm32f4xx.c
     ${STM32F4_CMSIS_DEVICE_DIR}/Source/Templates/gcc/startup_stm32f446xx.s
 )
-
 # ---------------------------------------------------------------------------
 # Cortex-M4F architecture
 # 语法：target_compile_options(<target> [INTERFACE|PUBLIC|PRIVATE] <options>...)
 # 给目标添加编译器选项。INTERFACE（同理）
-#                        
+#
 # 语法：target_link_options(<target> [INTERFACE|PUBLIC|PRIVATE] <options>...)
 # 给目标添加链接器选项。INTERFACE（同理）
 # ---------------------------------------------------------------------------
@@ -77,7 +71,6 @@ target_sources(
 target_compile_options(
     platform_stm32f446ze
     INTERFACE
-
     -mcpu=cortex-m4
     -mthumb
     -mfpu=fpv4-sp-d16
@@ -101,7 +94,6 @@ target_link_options(
 
     -Wl,--gc-sections
 )
-
 # ---------------------------------------------------------------------------
 # Linker script
 # ---------------------------------------------------------------------------
@@ -116,3 +108,41 @@ target_link_options(
 
     -T${STM32F446ZE_LINKER_SCRIPT}
 )
+
+# ---------------------------------------------------------------------------
+# OpenOCD flash target helper
+#
+# Board/debug-probe knowledge stays in platform/stm32f446ze/openocd.cfg.
+# Experiments only register their ELF target through this function.
+# ---------------------------------------------------------------------------
+function(stm32f446ze_add_flash_target target_name)
+    if(NOT TARGET ${target_name})
+        message(FATAL_ERROR
+            "stm32f446ze_add_flash_target: target '${target_name}' does not exist"
+        )
+    endif()
+
+    set(flash_target "flash_${target_name}")
+
+    if(TARGET ${flash_target})
+        message(FATAL_ERROR
+            "stm32f446ze_add_flash_target: target '${flash_target}' already exists"
+        )
+    endif()
+
+    add_custom_target(
+        ${flash_target}
+
+        COMMAND
+            bash
+            "${PROJECT_SOURCE_DIR}/scripts/flash.sh"
+            "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/openocd.cfg"
+            "$<TARGET_FILE:${target_name}>"
+
+        DEPENDS
+            ${target_name}
+
+        USES_TERMINAL
+        VERBATIM
+    )
+endfunction()

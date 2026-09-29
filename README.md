@@ -24,6 +24,7 @@
 
 "程序跑通"只是及格线。重点是：为什么成功？逻辑分析仪看到什么？
 寄存器是什么状态？中断什么时候发生？异常时怎么应对？
+
 ## 开发层次纪律
 
 | Level | 手段 | 目的 |
@@ -35,6 +36,7 @@
 
 同一外设从寄存器到 HAL 逐层递进，这样以后看到 HAL，你知道它下面在干什么。
 例外：USB 直接从框架级开始（TinyUSB / ST USB Device），不手搓 Chapter 9。
+
 ## 目录结构
 ```
 embedded-lab/
@@ -57,6 +59,7 @@ embedded-lab/
 
 每个目录都有自己的 README.md 进一步说明；推荐阅读顺序：
 根 README → `ROADMAP.md` → 你当前关心的目录。
+
 ## 快速开始
 
 工具链：arm-none-eabi-gcc（ARM GNU Toolchain 15.3）、cmake ≥ 3.20、ninja、openocd + ST-Link。
@@ -79,6 +82,7 @@ ninja -C build flash_<experiment_target>   # 例如 flash_exp001_gpio_output
 
 烧录链路统一为：`ELF → scripts/flash.sh → OpenOCD → ST-LINK → SWD → STM32`；
 板级 OpenOCD 配置归 `platform/<board>/` 管理，实验 README 记录本实验 target 和验证结果。
+
 ## 路线
 
 - 学习路线与实验清单（进度唯一权威）：`ROADMAP.md`

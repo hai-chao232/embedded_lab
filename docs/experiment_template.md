@@ -22,6 +22,7 @@ L1 寄存器 / CMSIS、L2 LL、L3 HAL——哪部分用哪个层次，写明原�
 
 - 实验 0XX：……
 - 平台能力：……
+
 ## 硬件连接
 
 | MCU 引脚 | 方向 / 复用 | 信号 / 外设 | 连接对象 | 备注 |
@@ -48,6 +49,7 @@ ninja -C build flash_exp0XX_<topic>
 平台使用统一链路：`ELF → scripts/flash.sh → OpenOCD → ST-LINK → SWD → MCU`。
 若要绕过 CMake target 手工验证，可直接调用 `scripts/flash.sh <openocd.cfg> <firmware.elf>`；
 正常实验流程优先使用 `flash_<target>`，避免重复手敲 OpenOCD 长命令。
+
 ## 仪器验证步骤
 
 写清楚：
@@ -86,6 +88,7 @@ ninja -C build flash_exp0XX_<topic>
 3. 实际现象。
 4. 如何用寄存器、调试器或仪器定位。
 5. 如何恢复。
+
 ## 实验记录
 
 记录：
